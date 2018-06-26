@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using MyProj.Models;
 using System.Web.Mvc;
 
 namespace MyProj.Controllers
@@ -10,21 +11,18 @@ namespace MyProj.Controllers
     {
         public ActionResult Index()
         {
+            
             return View();
         }
-
-        public ActionResult About()
+        [HttpPost]
+        public ActionResult Auth(string login, string password)
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
+            User vova = new User(login, password);
+            
         }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
+       public ActionResult Auth()
+       {
             return View();
-        }
+       }
     }
 }
