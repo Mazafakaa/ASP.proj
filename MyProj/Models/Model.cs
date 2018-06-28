@@ -27,8 +27,10 @@ namespace MyProj.Models
     {
         public int Id { get; set; }
         public string Address { get; set; }
-        public DateTime DateEvent { get; set; }
-        public string Participiants { get; set; }
+        public DateTime Date_event { get; set; }
+        public int Creator_id { get; set; }
+        public string Description { get; set; }
+
 
     }
     public class Participiant
@@ -36,6 +38,21 @@ namespace MyProj.Models
         public int Event_id { get; set; }
         public int Participiant_id { get; set; }
         
+    }
+    public class Message
+    {
+        public int Id { get; set; }
+        public int Sender_id { get; set; }
+        public int Recipient_id { get; set; }
+        public DateTime Date_send { get; set; }
+        public string Message { get;; set; }
+    }
+    public class Event_Mesaage
+    {
+        public int Id { get; set; }
+        public int Sender_id { get; set; }
+        public DateTime Date_send { get; set; }
+        public string Message { get; set; }
     }
 
 }
