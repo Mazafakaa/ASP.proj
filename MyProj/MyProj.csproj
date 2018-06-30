@@ -159,7 +159,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\DataBaseContext.cs" />
+    <Compile Include="Models\Hash.cs" />
     <Compile Include="Models\Model.cs" />
+    <Compile Include="Models\Salt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
