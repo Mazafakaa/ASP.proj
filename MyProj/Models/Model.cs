@@ -5,6 +5,10 @@ using System.Web;
 
 namespace MyProj.Models
 {
+    public enum Gender
+    {
+        Male, Female
+    }
     public enum Role
     {
         Admin, Moderator, Editor, Developer, User
@@ -18,10 +22,10 @@ namespace MyProj.Models
         public string Salt { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public int Age { get; set; }
+        public DateTime DateOfBirthday { get; set; }
+        public Gender Gender { get; set; }
         public DateTime DateReg { get; set; }
-        public string Group { get; set; }
-        public string Interes { get; set; }
+        public int Group { get; set; }
         public Role Access { get; set; }
        
        
@@ -58,5 +62,4 @@ namespace MyProj.Models
         public DateTime Date_send { get; set; }
         public string Message { get; set; }
     }
-
 }

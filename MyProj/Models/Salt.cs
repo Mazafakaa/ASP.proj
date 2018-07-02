@@ -14,6 +14,7 @@ namespace MyProj.Models
             salt = "";
             for (int i = 0; i < length; i++)
             {
+                //Генерируем случайный символ Юникода и дописываем его в конец строки
                 salt += Char.ConvertFromUtf32(rand.Next(33, 126));
             }
             return salt;
