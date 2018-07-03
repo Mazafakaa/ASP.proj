@@ -15,11 +15,12 @@ namespace MyProj.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Auth(string login, string password)
+        public ActionResult Auth(string email, string password)
         {
             //Ищем пользователя с запрошенным логином в бд
-            List<User> luser = db.Users.ToList<User>();
-            User user = luser.Find(u => u.Login == login);
+            var user = db.Users
+                 .Where(u => u.Email == email)
+                 .FirstOrDefault();
             //Если пользователь найден, проверяем пароль
             if (user != null)
             {
@@ -27,7 +28,6 @@ namespace MyProj.Controllers
                 if (Hash.GetMD5(Hash.GetMD5(password + user.Salt)) == user.Password)
                 {
                     Session["id"] = user.Id;
-                    Session["login"] = user.Login;
                     Session["name"] = user.Name;
                     Session["surname"] = user.Surname;
                     Session["dob"] = user.DateOfBirthday;
@@ -49,66 +49,48 @@ namespace MyProj.Controllers
         //Первая страница регистрации
         public ActionResult Reg()
         {
-            ViewBag.RegPage = 1;
             return View();
         }
         //Вторая страница регистрации
         [HttpPost]
-        public ActionResult Reg(string login, string password, string name, string surname)
+        public ActionResult Reg(string password, string name, string surname)
         {
-            if(login != null && login.Length > 6)
-            {
-                if(password != null && password.Length > 6)
-                {
-                    Session["login"] = login;
-                    Session["password"] = password;
-                    Session["name"] = name;
-                    Session["surname"] = surname;
-                    ViewBag.RegPage = 2;
-                    return View();
-                }
-                else
-                {
-                    ViewBag.PassErr = "Минимальная длинна пароля 6 символом";
-                }
-            }
-            else
-            {
-                ViewBag.LoginErr = "Минимальная длинна логина 6 символом";
-            }
-            ViewBag.RegPage = 1;
             return View();
         }
         //Третья страница регистрации
         [HttpPost]
         public ActionResult Reg(DateTime birthday, int group, int gender)
         {
-            //Если значения не пустые и хитрый юзер не нахимичил с разметкой - то регаем, иначе возращаем текущую страницу с ошибкой
-            if(birthday != null && (gender == 1||gender == 0))
-            {
-                User user = new User()
-                {
-                    Login = Session["login"].ToString(),
-                    Salt = USalt.GenSalt(20),
-                    Name = Session["name"].ToString(),
-                    Surname = Session["surname"].ToString(),
-                    Gender = (Gender)gender,
-                    DateOfBirthday = birthday,
-                    DateReg = DateTime.Now,
-                    Group = group,
-                    Access = Role.User
-                };
-                user.Password = Hash.GetMD5(Hash.GetMD5(Session["password"].ToString() + user.Salt));
-                db.Users.Add(user);
-                db.SaveChanges();
-                ViewBag.RegPage = 3;
-                return View();
-            }
-            ViewBag.ErrInp = "Введены некоректные данные";
-            ViewBag.RegPage = 2;
             return View();
         }
-        
+        [HttpGet]
+        public RedirectResult Verify(string verify)
+        {
+            var user = db.Users
+                .Where(u => u.VerifyCode == verify)
+                .FirstOrDefault();
+            if(user != null)
+            {
+                user.Verification = true;
+                db.SaveChanges();
+                return Redirect("/User/My");
+            }
+            else
+            {
+                return Redirect("https://ru.wikipedia.org/wiki/Мошенничество");
+            }
+        }
+        public ActionResult My()
+        {
+            if(Session["Id"] != null)
+            { 
+                var user = db.Users
+                    .Where(u => u.Id == int.Parse(Session["id"].ToString()))
+                    .FirstOrDefault();
+                return View(user);
+            }
+            return Redirect("/User/Auth");
+        }
         
     }
 }
