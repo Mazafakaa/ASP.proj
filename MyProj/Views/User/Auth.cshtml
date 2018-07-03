@@ -3,7 +3,30 @@
     ViewBag.Title = "Auth";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<style>
+    .form
+    {
+        height:250px;
+        width: 250px;
+        border:2px grey solid;
+        border-radius: 3px 4px;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+            <div class="form">
+                <form action="/User/Auth" method="post">
+                    <span class="alert-info">@ViewBag.AuthError</span>
+                    <label>Введите ваш email:</label><br /><br /> <input type="email" name="email" value="@ViewBag.Email" /><br /><br />
+                    <label>Введите ваш пароль</label><br /><br /><input type="password" name="password" value="" /><br /><br />
+                    <button type="submit" class="btn-success">Авторизоваться</button>
+                </form>
 
-<h2>Auth</h2>
-<div>Авторизация</div>
+            </div>
+        </div>
+        <div class="col-lg-4"></div>
+    </div>
+</div>
 

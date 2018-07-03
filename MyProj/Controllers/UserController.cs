@@ -10,10 +10,7 @@ namespace MyProj.Controllers
     public class UserController : Controller
     {
         static DataBaseContext db = new DataBaseContext();
-        public ActionResult Index()
-        {
-            return View();
-        }
+        
         [HttpPost]
         public ActionResult Auth(string email, string password)
         {
@@ -34,7 +31,7 @@ namespace MyProj.Controllers
                     Session["access"] = user.Access;
                     Session["auth"] = true;
                     ViewBag.Auth = true;
-                    return View();
+                    return Redirect("/User/My");
                 }
             }
             //Если пользователь не найден или пароль некоректен - не авторизуем и выведем соответствующее сообщение
