@@ -17,5 +17,11 @@ namespace MyProj.Models
         public DbSet<Participiant> Participiants { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Event_Mesaage> Event_Mesaages { get; set; }
+
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().Property(u => u.DateReg).HasColumnType("datetime2");
+        }
     }
 }

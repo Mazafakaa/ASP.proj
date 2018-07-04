@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Net.Mail;
+using System.Xml;
 using MyProj.Models;
 
 namespace MyProj.Controllers
@@ -43,22 +45,99 @@ namespace MyProj.Controllers
         {
             return View();
         }
-        //Первая страница регистрации
+        //Дефолт страницы регистрации
         public ActionResult Reg()
         {
-            return View();
+            ViewBag.RegPage = 1;
+            return View("~/Views/User/Reg.cshtml");
         }
-        //Вторая страница регистрации
+        //Обрабатывает первую страницу и если все ок - возвращает вторую
         [HttpPost]
-        public ActionResult Reg(string password, string name, string surname)
+        public ActionResult Reg2(string email, string password, string confirmpassword)
         {
-            return View();
+            if(email != null && password != null && confirmpassword != null)
+            {
+                if(password.Length >= 6)
+                {
+                    if(password == confirmpassword)
+                    {
+                        Session["email"] = email;
+                        Session["password"] = password;
+                        ViewBag.RegPage = 2;
+                        return View("~/Views/User/Reg.cshtml");
+                    }
+                    else
+                    {
+                        ViewBag.ErrorReg = "Введенные пароли не совпадают";
+                    }
+                }
+                else
+                {
+                    ViewBag.ErrorReg = "Длинна пароля должна составлять минимум 6 символов";
+                }
+            }
+            else
+            {
+                ViewBag.ErrorReg = "Заполнены не все обязательные поля";
+            }
+            ViewBag.RegPage = 1;
+            return View("~/Views/User/Reg.cshtml");
         }
-        //Третья страница регистрации
+        //Обрабатывает вторую страницу и если все ок - возвращает третью
         [HttpPost]
-        public ActionResult Reg(DateTime birthday, int group, int gender)
+        public ActionResult Reg3(string name, string surname, DateTime dob, Gender gender, int city)
         {
-            return View();
+            if (name != null && surname != null && dob != null)
+            {
+                Session["name"] = name;
+                Session["surname"] = surname;
+                Session["dob"] = dob;
+                Session["city"] = city;
+                ViewBag.RegPage = 3;
+                return View("~/Views/User/Reg.cshtml");
+            }
+            else
+            {
+                ViewBag.ErrorReg = "Заполнены не все обязательные поля";
+            }
+            ViewBag.RegPage = 2;
+            return View("~/Views/User/Reg.cshtml");
+        }
+        [HttpPost]
+        public ActionResult Reg4()
+        {
+           
+            if (Session["email"] != null && Session["password"] != null && Session["name"] != null && Session["surname"] != null && Session["dob"] != null)
+                {
+                User user = new User()
+                {
+                    Email = Session["email"].ToString(),
+                    Name = Session["name"].ToString(),
+                    Surname = Session["surname"].ToString(),
+                    DateReg = DateTime.Now,
+                    DateOfBirthday = DateTime.Parse(Session["dob"].ToString()),
+                    City = int.Parse(Session["city"].ToString()),
+                    CountCreateEvent = 0,
+                    Rating = 0,
+                    Access = Role.User
+                };
+                user.Salt = USalt.GenSalt(20);
+                user.Password = Hash.GetMD5(Hash.GetMD5(Session["password"].ToString() + user.Salt));
+                user.Verification = false;
+                user.VerifyCode = VerifyCode.GetVerifyCode(60);
+                //TODO: Отправка писем
+                db.Users.Add(user);
+                db.SaveChanges();
+                ViewBag.RegPage = 4;
+                ViewBag.Name = user.Name;
+                db.Dispose();
+                return View("~/Views/User/Reg.cshtml");
+            }
+            
+        //Пятая страница - страница ошибки регистрации
+        ViewBag.RegPage = 5;
+        return View("~/Views/User/Reg.cshtml");
+
         }
         [HttpGet]
         public RedirectResult Verify(string verify)
@@ -79,7 +158,7 @@ namespace MyProj.Controllers
         }
         public ActionResult My()
         {
-            if(Session["Id"] != null)
+            if(bool.Parse(Session["auth"].ToString()))
             { 
                 var user = db.Users
                     .Where(u => u.Id == int.Parse(Session["id"].ToString()))

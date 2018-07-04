@@ -25,13 +25,14 @@ namespace MyProj.Models
         public Gender Gender { get; set; }
         public DateTime DateReg { get; set; }
         public int Group { get; set; }
+        public int City { get; set; }
         public Role Access { get; set; }
         public string CookieKey { get; set; }
         public string VerifyCode { get; set; }
         public bool Verification { get; set; }
         public string Email { get; set; }
         public int CountCreateEvent { get; set; }
-        public float Rating { get; set; }
+        public double Rating { get; set; }
        
        
     }
